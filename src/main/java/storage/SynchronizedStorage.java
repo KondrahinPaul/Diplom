@@ -40,6 +40,16 @@ public class SynchronizedStorage implements Storage {
     }
 
     @Override
+    public List<Contact> call(String keyword) {
+        return storage.call(keyword);
+    }
+
+    @Override
+    public List<Contact> call() {
+        return storage.call();
+    }
+
+    @Override
     public void close() throws Exception {
         storage.close();
 

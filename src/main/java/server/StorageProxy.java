@@ -45,11 +45,19 @@ public class StorageProxy implements Storage, Cloneable {
 
     @Override
     public Contact remove(int id) {
+//        try {
+//            objOut.writeObject(new Remove(contact));
+//            final Response response = (Response) objIn.readObject();
+//            return getResponse(response);
+//        } catch (IOException | ClassNotFoundException e) {
+//            throw new RuntimeException("Failed finding contacts", e);
+//        }
         return null;
     }
 
     @Override
     public Optional<Contact> find(int id) {
+
         return Optional.empty();
     }
 
@@ -75,14 +83,36 @@ public class StorageProxy implements Storage, Cloneable {
         }
     }
 
+    @Override
+    public List<Contact> call(String keyword) {
+        try {
+            objOut.writeObject(new Call(keyword));
+            final Response response = (Response) objIn.readObject();
+            return getResponse(response);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Failed calling contacts", e);
+        }
+    }
+
+    @Override
+    public List<Contact> call() {
+        try {
+            objOut.writeObject(new FindAll());
+            final Response response = (Response) objIn.readObject();
+            return getResponse(response);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Failed finding contacts", e);
+        }
+    }
+
 
     private List<Contact> getResponse(Response response) {
-if (response instanceof Success success) {
-    return success.getContacts();
-}else if (response instanceof Failure failure){
-    throw new RuntimeException(failure.getErrorMessage());
-}
-throw new RuntimeException("Unknown server response");
+        if (response instanceof Success success) {
+            return success.getContacts();
+        } else if (response instanceof Failure failure) {
+            throw new RuntimeException(failure.getErrorMessage());
+        }
+        throw new RuntimeException("Unknown server response");
     }
 
     @Override

@@ -21,8 +21,8 @@ public class ContactList {
             Команды:
             find [keyword]
             remove <id>
-            add
-            update<id>
+            new
+            call [keyword]
             quit
             help
             """;
@@ -65,7 +65,7 @@ public class ContactList {
                 case "help":
                     help();
                     break;
-                case "add":
+                case "new":
                     add(scanner);
                     break;
                 case "update":
@@ -77,6 +77,15 @@ public class ContactList {
                             : "";
                     find(keyword);
                     break;
+                case "call":
+                    final String phone = commndArgs.length > 1
+                            ? commndArgs[1]
+                            : "";
+                    call(phone);
+                    break;
+//                case "remove":
+//                    remove();
+//                    break;
                 case "quit":
                     System.out.println("BYE");
                     return;
@@ -88,6 +97,14 @@ public class ContactList {
         }
     }
 
+
+    private void call(String keyword) {
+        final List<Contact> contacts = keyword.isBlank()
+                ? storage.call()
+                : storage.call(keyword);
+        System.out.println("Contacts calling" + contacts.size());
+        contacts.forEach(System.out::println);
+    }
     private void find(String keyword) {
         final List<Contact> contacts = keyword.isBlank()
                 ? storage.find()
@@ -110,6 +127,15 @@ public class ContactList {
 
 
     }
+
+//    private void remove(Scanner scanner) {
+//        Contact newContact = createDefaultContact();
+//        fillContact(scanner, newContact);
+//
+//        Contact savedContact = storage.save(newContact);
+//        System.out.println("Contact added");
+//        System.out.println(savedContact);
+//    }
 
     private void add(Scanner scanner) {
         Contact newContact = createDefaultContact();
@@ -145,13 +171,13 @@ public class ContactList {
         }
         System.out.println("Enter preferense [" + newContact.getPreferense() + "]:");
         String preferense = scanner.nextLine();
-        if (!isBlank(preferense)){
+        if (!isBlank(preferense)) {
             newContact.setPreferense(preferense);
         }
 
-        System.out.println("Enter shopLike [" + newContact.getShopLike()+"]:");
+        System.out.println("Enter shopLike [" + newContact.getShopLike() + "]:");
         String shopLike = scanner.nextLine();
-        if (!isBlank(preferense)){
+        if (!isBlank(preferense)) {
             newContact.setShopLike(shopLike);
         }
     }
@@ -165,7 +191,7 @@ public class ContactList {
     }
 
     private Contact createDefaultContact() {
-        return new Contact(0, "000", "Anonymos", "Missed address", "000", "VIP or NOT", "Type of shop");
+        return new Contact(0, "000", "Name Surname", "City street", "000-000-00-00", "VIP or NOT", "Type of shop");
     }
 
     private static Storage createStorage(Configuration config) throws IOException, SQLException {

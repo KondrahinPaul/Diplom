@@ -11,4 +11,8 @@ public interface Storage extends AutoCloseable {
     Optional<Contact> find(int id);
     List<Contact> find();
     List<Contact> find(String keyword);
+
+    List<Contact> call(String keyword);
+
+    List<Contact> call();
 }

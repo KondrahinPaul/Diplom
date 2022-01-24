@@ -102,7 +102,7 @@ public class Server implements AutoCloseable {
         public void run() {
             try (socket;
                  final var objIn = new ObjectInputStream(socket.getInputStream());
-                 final var objOut =new ObjectOutputStream(socket.getOutputStream());){
+                 final var objOut = new ObjectOutputStream(socket.getOutputStream());) {
                 while (!isInterrupted()) {
                     objOut.reset();
                     final Command command = (Command) objIn.readObject();
@@ -120,20 +120,24 @@ public class Server implements AutoCloseable {
                     } else if (command instanceof FindAll) {
                         final List<Contact> contacts = storage.find();
                         objOut.writeObject(new Success(contacts));
-                    }else if (command instanceof Remove remove){
+                    } else if (command instanceof Remove remove) {
                         final List<Contact> removed = (List<Contact>) storage.remove(remove.getId());
                         objOut.writeObject(new Success(removed));
-                }else {
+                    } else if (command instanceof Call call) {
+                        final List<Contact> cald = storage.call(call.getKeyword());
+                        objOut.writeObject(new Success(cald));
+                    } else {
                         objOut.writeObject(new Failure("Unknown command"));
+                        System.out.println("++");
                     }
                 }
 
-            } catch(IOException e){
+            } catch (IOException e) {
                 System.err.println("Client" + socket.getInetAddress() + "disconnect");
 
-            } catch(ClassNotFoundException e){
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-            }finally{
+            } finally {
                 synchronized (connections) {
                     connections.remove(this);
                 }

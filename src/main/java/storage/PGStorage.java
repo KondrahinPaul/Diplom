@@ -76,6 +76,31 @@ public class PGStorage implements Storage {
     }
 
     @Override
+    public List<Contact> call(String keyword) {
+        try (Statement st = connection.createStatement()) {
+            try (ResultSet rs = st.executeQuery("select id, name,adress, phones from contact ")) {
+                List<Contact> contacts = new ArrayList<>();
+
+                while (rs.next()) {
+                    Contact contact = new Contact();
+                    contact.setId(rs.getInt("id"));
+                    contact.setName(rs.getString("name"));
+                    contact.setAddress(rs.getString("adress"));
+                    contact.setPhone(rs.getString("phone"));
+                }
+                return contacts;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed", e);
+        }
+    }
+
+    @Override
+    public List<Contact> call() {
+        return null;
+    }
+
+    @Override
     public void close() throws Exception {
         connection.close();
     }
